@@ -1,4 +1,4 @@
-# FurCDN-API-Kotlin
+# kotlin-sdk
 
 [FurCDN](https://www.furcdn.us) 開放 API 的 Kotlin SDK，使用 kotlinx-serialization。
 
@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.github.FurCDN:FurCDN-API-Kotlin:0.1.0")
+    implementation("com.github.FurCDN:kotlin-sdk:0.1.0")
 }
 ```
 
@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    implementation 'com.github.FurCDN:FurCDN-API-Kotlin:0.1.0'
+    implementation 'com.github.FurCDN:kotlin-sdk:0.1.0'
 }
 ```
 
@@ -44,7 +44,7 @@ Maven：
 
 <dependency>
     <groupId>com.github.FurCDN</groupId>
-    <artifactId>FurCDN-API-Kotlin</artifactId>
+    <artifactId>kotlin-sdk</artifactId>
     <version>0.1.0</version>
 </dependency>
 ```
