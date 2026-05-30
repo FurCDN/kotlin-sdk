@@ -20,6 +20,9 @@ data class PurgeResult(
 internal data class DomainsResponse(val domains: List<Domain>)
 
 @Serializable
+internal data class OriginIpsResponse(val ips: List<String> = emptyList(), val count: Int = 0)
+
+@Serializable
 internal data class OkResponse(val ok: Boolean = true)
 
 @Serializable

@@ -35,6 +35,16 @@ class FurCdnClient(
         request("POST", "/api/v1/domains/$domainId/ssl", body)
     }
 
+    /**
+     * 取得目前全部節點的回源 IP，供源站防火牆白名單使用。
+     *
+     * 這是公開端點，不需要 API key（SDK 仍會帶上 Authorization，端點會忽略）。
+     * 清單「不是固定的」：節點隨時新增 / 下線 / 換 IP。請勿寫死，建議每 5~10 分鐘
+     * 重新取得後同步防火牆規則。更可靠的回源鑑別方式是自定義回源 header。
+     */
+    fun originIps(): List<String> =
+        json.decodeFromString<OriginIpsResponse>(request("GET", "/api/public/origin-ips?format=json")).ips
+
     private fun request(method: String, path: String, body: String? = null): String {
         val builder = HttpRequest.newBuilder()
             .uri(URI.create(baseUrl + path))
