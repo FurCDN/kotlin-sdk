@@ -21,6 +21,14 @@ class FurCdnClient(
         encodeDefaults = true
     }
 
+    /**
+     * 送請求 body 時用的設定：略過預設值，只送出呼叫端實際指定的欄位
+     * （例如 `PurgeOptions(all = true)` 只會送出 `{"all":true}`）。
+     */
+    private val requestJson = Json {
+        encodeDefaults = false
+    }
+
     /** 列出當前 API key 擁有者的所有域名 */
     fun listDomains(): List<Domain> =
         json.decodeFromString<DomainsResponse>(request("GET", "/api/v1/domains")).domains
@@ -28,6 +36,27 @@ class FurCdnClient(
     /** 刷新指定域名所有節點的 L1+L2 快取 */
     fun purgeCache(domainId: Long): PurgeResult =
         json.decodeFromString(request("POST", "/api/v1/domains/$domainId/purge"))
+
+    /**
+     * 選擇性清除快取：只清 [options] 命中的內容，未命中的快取維持不變。
+     *
+     * ```kotlin
+     * client.purgeCache(123, PurgeOptions(urls = listOf("https://example.com/a.css?v=1")))
+     * client.purgeCache(123, PurgeOptions(prefixes = listOf("/static/")))
+     * ```
+     *
+     * `patterns` 以 glob 比對路徑，`*` 可匹配任意字元（含斜線），值必須以斜線開頭；
+     * 三種選擇器可同時使用（聯集）。
+     *
+     * 若要清整個域名，請用不帶 body 的 [purgeCache]；帶 `PurgeOptions(all = true)` 亦可。
+     *
+     * @throws IllegalArgumentException 條件不合法（選擇器與 `all` 併用、全部為空、
+     *   超過 100 筆、空字串或單筆超過 2048 字元）。此檢查發生在發出請求之前。
+     */
+    fun purgeCache(domainId: Long, options: PurgeOptions): PurgeResult {
+        val body = requestJson.encodeToString(options)
+        return json.decodeFromString(request("POST", "/api/v1/domains/$domainId/purge", body))
+    }
 
     /** 為指定域名上傳 PEM 格式憑證和私鑰，會關閉自動續約 */
     fun uploadSsl(domainId: Long, cert: String, key: String) {
